@@ -17,15 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class FilledThemeparkController {
 
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${themeparkservice}")
+    @Value("${themeparkservice.baseurl}")
     private String themeparkServiceBaseUrl;
 
-    @Value("${attractionservice}")
+    @Value("${attractionservice.baseurl}")
     private String attractionServiceBaseUrl;
 
     //    geeft één themepark terug met een lijst van zijn attracties
