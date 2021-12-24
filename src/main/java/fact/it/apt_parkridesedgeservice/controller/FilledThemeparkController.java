@@ -61,7 +61,7 @@ public class FilledThemeparkController {
         for (Themepark themepark :
                 themeparks) {
             ResponseEntity<List<Attraction>> responseEntityAttractions =
-                    restTemplate.exchange("http://" + attractionServiceBaseUrl + "/themepark/{themeparkCode}",
+                    restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions/themepark/{themeparkCode}",
                             HttpMethod.GET, null, new ParameterizedTypeReference<List<Attraction>>() {
                             }, themepark.getThemeparkCode());
 
@@ -72,7 +72,7 @@ public class FilledThemeparkController {
 
 
         //geeft het themepark met alle attracties die een bepaalde naam hebben
-        @GetMapping("/rides/themepark/{themeparkCode}/attractions/name/{name}")
+        @GetMapping("/rides/themepark/{themeparkCode}/attractions/name/{attractionName}")
         public FilledThemepark getRidesByParkIdAndRideName (@PathVariable String themeparkCode, @PathVariable String
         attractionName){
 
@@ -80,11 +80,12 @@ public class FilledThemeparkController {
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
                             Themepark.class, themeparkCode);
 
-            Attraction attraction =
-                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/name/" + attractionName + "/themepark/" + themeparkCode,
-                            Attraction.class);
+            ResponseEntity<List<Attraction>> responseEntityAttractions =
+                    restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions/name/" + attractionName + "/themepark/" + themeparkCode,
+                            HttpMethod.GET, null, new ParameterizedTypeReference<List<Attraction>>() {
+                            }, attractionName, themeparkCode);
 
-            return new FilledThemepark(themepark, attraction);
+            return new FilledThemepark(themepark, responseEntityAttractions.getBody());
         }
 
 
