@@ -121,17 +121,43 @@ public class FilledThemeparkController {
             return new FilledThemepark(themepark, attraction);
         }
 
+//        @PutMapping("/rides")
+//        public FilledThemepark updateRide(@RequestParam String attractionCode, @RequestParam String themeparkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
+//
+//            Attraction attraction =
+//                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/" + attractionCode,
+//                            Attraction.class);
+//            attraction.setThemeparkCode(themeparkCode);
+//            attraction.setDescription(description);
+//            attraction.setName(name);
+//            attraction.setMinHeight(minHeight);
+//            attraction.setTypeId(typeId);
+//
+//            ResponseEntity<Attraction> responseEntityAttraction =
+//                    restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions",
+//                            HttpMethod.PUT, new HttpEntity<>(attraction), Attraction.class);
+//
+//            Attraction retrievedAttraction = responseEntityAttraction.getBody();
+//
+//            Themepark themepark =
+//                    restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
+//                            Themepark.class, themeparkCode);
+//
+//            return new FilledThemepark(themepark, retrievedAttraction);
+//        }
+
         @PutMapping("/rides")
-        public FilledThemepark updateRide(@RequestParam String attractionCode, @RequestParam String themeparkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
+        public FilledThemepark updateRide(@RequestBody Attraction editAttraction) {
 
             Attraction attraction =
-                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/" + attractionCode,
+                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/" + editAttraction.getAttractionCode(),
                             Attraction.class);
-            attraction.setThemeparkCode(themeparkCode);
-            attraction.setDescription(description);
-            attraction.setName(name);
-            attraction.setMinHeight(minHeight);
-            attraction.setTypeId(typeId);
+
+            attraction.setThemeparkCode(editAttraction.getThemeparkCode());
+            attraction.setDescription(editAttraction.getDescription());
+            attraction.setName(editAttraction.getName());
+            attraction.setMinHeight(editAttraction.getMinHeight());
+            attraction.setTypeId(editAttraction.getTypeId());
 
             ResponseEntity<Attraction> responseEntityAttraction =
                     restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions",
@@ -139,11 +165,13 @@ public class FilledThemeparkController {
 
             Attraction retrievedAttraction = responseEntityAttraction.getBody();
 
+            String themeparkCode = editAttraction.getThemeparkCode();
+
             Themepark themepark =
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
                             Themepark.class, themeparkCode);
 
-            return new FilledThemepark(themepark, retrievedAttraction);
+            return new FilledThemepark(themepark, attraction);
         }
 
         //delete a specific attraction
