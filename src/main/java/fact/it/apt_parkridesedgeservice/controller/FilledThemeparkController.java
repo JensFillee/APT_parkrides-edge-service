@@ -81,7 +81,7 @@ public class FilledThemeparkController {
                             Themepark.class, themeparkCode);
 
             Attraction attraction =
-                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/name/" + attractionName + "/themepark/" + parkCode,
+                    restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/name/" + attractionName + "/themepark/" + themeparkCode,
                             Attraction.class);
 
             return new FilledThemepark(themepark, attraction);
