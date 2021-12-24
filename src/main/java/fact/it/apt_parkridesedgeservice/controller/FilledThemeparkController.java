@@ -31,22 +31,22 @@ public class FilledThemeparkController {
 
     //    geeft één themepark terug met een lijst van zijn attracties
     @GetMapping("/rides/themepark/{themeparkCode}")
-    public FilledThemepark getThemeparkByCode(@PathVariable String parkCode) {
+    public FilledThemepark getThemeparkByCode(@PathVariable String themeparkCode) {
         Themepark themepark =
                 restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
-                        Themepark.class, parkCode);
+                        Themepark.class, themeparkCode);
 
         ResponseEntity<List<Attraction>> responseEntityAttractions =
                 restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions/themepark/{themeparkCode}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Attraction>>() {
-                        }, parkCode);
+                        }, themeparkCode);
 
         return new FilledThemepark(themepark, responseEntityAttractions.getBody());
     }
 
 
     //geeft lijst van themeparks met een bepaalde naam samen met hun attracties
-    @GetMapping("/rides/themepark/{name}")
+    @GetMapping("/rides/themepark/name/{name}")
     public List<FilledThemepark> getThemeparksByName(@PathVariable String name) {
 
         List<FilledThemepark> returnList = new ArrayList<>();
@@ -73,12 +73,12 @@ public class FilledThemeparkController {
 
         //geeft het themepark met alle attracties die een bepaalde naam hebben
         @GetMapping("/rides/themepark/{themeparkCode}/attractions/name/{name}")
-        public FilledThemepark getRidesByParkIdAndRideName (@PathVariable String parkCode, @PathVariable String
+        public FilledThemepark getRidesByParkIdAndRideName (@PathVariable String themeparkCode, @PathVariable String
         attractionName){
 
             Themepark themepark =
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
-                            Themepark.class, parkCode);
+                            Themepark.class, themeparkCode);
 
             Attraction attraction =
                     restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/name/" + attractionName + "/themepark/" + parkCode,
@@ -90,41 +90,41 @@ public class FilledThemeparkController {
 
         //geeft lijst van alle attracties van een bepaald type in een bepaald park
         @GetMapping("/rides/themepark/{themeparkCode}/attractions/type/{typeId}")
-        public FilledThemepark getRidesByParkIdAndTypeId(@PathVariable String parkCode, @PathVariable Integer typeId){
+        public FilledThemepark getRidesByParkIdAndTypeId(@PathVariable String themeparkCode, @PathVariable Integer typeId){
 
             Themepark themepark =
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
-                            Themepark.class, parkCode);
+                            Themepark.class, themeparkCode);
 
             ResponseEntity<List<Attraction>> responseEntityAttractions =
                     restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions/type/{typeId}/themepark/{themeparkCode}",
                             HttpMethod.GET, null, new ParameterizedTypeReference<List<Attraction>>() {
-                            }, typeId,parkCode);
+                            }, typeId, themeparkCode);
 
             return new FilledThemepark(themepark, responseEntityAttractions.getBody());
         }
 
         @PostMapping("/rides")
-        public FilledThemepark addRide(@RequestParam String attractionCode, @RequestParam String parkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
+        public FilledThemepark addRide(@RequestParam String attractionCode, @RequestParam String themeparkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
 
             Attraction attraction =
                     restTemplate.postForObject("http://" + attractionServiceBaseUrl + "/attractions",
-                            new Attraction(name,minHeight,typeId,description,parkCode,attractionCode),Attraction.class);
+                            new Attraction(name,minHeight,typeId,description, themeparkCode,attractionCode),Attraction.class);
 
             Themepark themepark =
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
-                            Themepark.class,parkCode);
+                            Themepark.class, themeparkCode);
 
             return new FilledThemepark(themepark, attraction);
         }
 
         @PutMapping("/rides")
-        public FilledThemepark updateRide(@RequestParam String attractionCode, @RequestParam String parkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
+        public FilledThemepark updateRide(@RequestParam String attractionCode, @RequestParam String themeparkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
 
             Attraction attraction =
                     restTemplate.getForObject("http://" + attractionServiceBaseUrl + "/attractions/" + attractionCode,
                             Attraction.class);
-            attraction.setThemeparkCode(parkCode);
+            attraction.setThemeparkCode(themeparkCode);
             attraction.setDescription(description);
             attraction.setName(name);
             attraction.setMinHeight(minHeight);
@@ -138,7 +138,7 @@ public class FilledThemeparkController {
 
             Themepark themepark =
                     restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
-                            Themepark.class,parkCode);
+                            Themepark.class, themeparkCode);
 
             return new FilledThemepark(themepark, retrievedAttraction);
         }
