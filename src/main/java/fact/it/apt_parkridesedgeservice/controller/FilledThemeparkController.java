@@ -107,7 +107,7 @@ public class FilledThemeparkController {
         public FilledThemepark addRide(@RequestParam String attractionCode, @RequestParam String parkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
 
             Attraction attraction =
-                    restTemplate.postForObject("http://" + attractionServiceBaseUrl + "/reviews",
+                    restTemplate.postForObject("http://" + attractionServiceBaseUrl + "/attractions",
                             new Attraction(name,minHeight,typeId,description,parkCode,attractionCode),Attraction.class);
 
             Themepark themepark =
