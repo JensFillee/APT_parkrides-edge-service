@@ -105,14 +105,16 @@ public class FilledThemeparkController {
         }
 
         @PostMapping("/rides")
-        public FilledThemepark addRide(@RequestParam String attractionCode, @RequestParam String themeparkCode, @RequestParam String name, @RequestParam Integer typeId, @RequestParam Integer minHeight, @RequestParam String description){
+        public FilledThemepark addRide(@RequestBody Attraction newAttraction) {
 
             Attraction attraction =
                     restTemplate.postForObject("http://" + attractionServiceBaseUrl + "/attractions",
-                            new Attraction(name,minHeight,typeId,description, themeparkCode,attractionCode),Attraction.class);
+                            newAttraction, Attraction.class);
+
+            String themeparkCode = newAttraction.getThemeparkCode();
 
             Themepark themepark =
-                    restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
+                    restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/" + themeparkCode,
                             Themepark.class, themeparkCode);
 
             return new FilledThemepark(themepark, attraction);
