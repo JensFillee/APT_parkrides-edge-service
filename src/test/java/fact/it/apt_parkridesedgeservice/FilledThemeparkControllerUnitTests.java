@@ -27,6 +27,8 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,7 +59,6 @@ public class FilledThemeparkControllerUnitTests {
     private Attraction attractionType2Themepark1 = new Attraction( "Attractie 2", "test descriptie attractie 2", 100, 2, "TP1", "A002");
     private Attraction attractionType1Themepark2 = new Attraction( "Attractie 3", "test descriptie attractie 3", 120, 1, "TP2", "A003");
     private Attraction attraction2Type1Themepark1 = new Attraction("Attractie 4", "test descriptie attractie 4", 125, 1, "TP1", "A004");
-
 
     private List<Attraction> allAttractionFromType1 = Arrays.asList(attractionType1Themepark1, attractionType1Themepark2);
     private List<Attraction> allAttractionsForThemepark1 = Arrays.asList(attractionType1Themepark1, attractionType2Themepark1);
@@ -370,6 +371,19 @@ public class FilledThemeparkControllerUnitTests {
                 .andExpect(jsonPath("$.rideDetails[0].description", is("test descriptie attractie 1")));
 
     }
+  
+  
+    @Test
+    public void whenDeleteRide_thenReturnStatusOk() throws Exception {
 
+        // DELETE ride with attractionCode A004
+        mockServer.expect(ExpectedCount.once(),
+                requestTo(new URI("http://" + attractionServiceBaseUrl + "/attractions/A004")))
+                .andExpect(method(HttpMethod.DELETE))
+                .andRespond(withStatus(HttpStatus.OK)
+                );
 
+        mockMvc.perform(delete("/api/rides/attraction/{attractionCode}", "A004"))
+                .andExpect(status().isOk());
+    }
 }
