@@ -77,7 +77,7 @@ public class FilledThemeparkController {
     }
 
 
-        //    geeft één themepark terug met een lijst van zijn attracties
+        // geeft één themepark terug met een lijst van zijn attracties
     @GetMapping("/rides/themepark/{themeparkCode}")
     public FilledThemepark getThemeparkByCode(@PathVariable String themeparkCode) {
         Themepark themepark =
