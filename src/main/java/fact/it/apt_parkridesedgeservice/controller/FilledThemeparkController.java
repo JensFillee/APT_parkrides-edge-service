@@ -52,8 +52,32 @@ public class FilledThemeparkController {
         return returnList;
     }
 
+    @GetMapping("/rides/attractions/type/{typeId}")
+    public List<FilledThemepark> getRidesByTypeId(@PathVariable Integer typeId){
 
-        //    geeft één themepark terug met een lijst van zijn attracties
+        List<FilledThemepark> returnList= new ArrayList();
+
+        ResponseEntity<List<Attraction>> responseEntityReviews =
+                restTemplate.exchange("http://" + attractionServiceBaseUrl + "/attractions/type/{typeId}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Attraction>>() {
+                        }, typeId);
+
+        List<Attraction> attractions = responseEntityReviews.getBody();
+
+        for (Attraction attraction:
+                attractions) {
+            Themepark themepark =
+                    restTemplate.getForObject("http://" + themeparkServiceBaseUrl + "/themeparks/{themeparkCode}",
+                            Themepark.class, attraction.getThemeparkCode());
+
+            returnList.add(new FilledThemepark(themepark, attraction));
+        }
+
+        return returnList;
+    }
+
+
+        // geeft één themepark terug met een lijst van zijn attracties
     @GetMapping("/rides/themepark/{themeparkCode}")
     public FilledThemepark getThemeparkByCode(@PathVariable String themeparkCode) {
         Themepark themepark =

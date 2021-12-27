@@ -9,6 +9,13 @@ public class Themepark {
 
     public Themepark(){}
 
+    public Themepark(String name, String address, int capacity, String themeparkCode) {
+        this.name = name;
+        this.address = address;
+        this.capacity = capacity;
+        this.themeparkCode = themeparkCode;
+    }
+
     public String getId() {
         return id;
     }

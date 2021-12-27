@@ -12,11 +12,11 @@ public class Attraction {
 
     public Attraction(){}
 
-    public Attraction(String name, int minHeight, int typeId, String description, String themeparkCode, String attractionCode) {
+    public Attraction(String name, String description, int minHeight, int typeId, String themeparkCode, String attractionCode) {
         this.name = name;
+        this.description = description;
         this.minHeight = minHeight;
         this.typeId = typeId;
-        this.description = description;
         this.themeparkCode = themeparkCode;
         this.attractionCode = attractionCode;
     }
