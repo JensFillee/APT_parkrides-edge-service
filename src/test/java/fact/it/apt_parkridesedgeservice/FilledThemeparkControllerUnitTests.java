@@ -29,6 +29,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -245,11 +246,10 @@ public class FilledThemeparkControllerUnitTests {
                 .andExpect(jsonPath("$.rideDetails[1].name", is("Attractie 2")))
                 .andExpect(jsonPath("$.rideDetails[1].minHeight", is(100)));
     }
-
-    //Get rides by Themeparkcode and TypeId
+  
+    //get rides by themeparkcode and typeId
     @Test
     public void whenGetRidesByThemeparkCodeAndTypeId_thenReturnFilledThemeparksJson() throws Exception {
-
         // GET Themepark 1 info
         mockServer.expect(ExpectedCount.once(),
                         requestTo(new URI("http://" + themeparkServiceBaseUrl + "/themeparks/TP1")))
@@ -280,6 +280,99 @@ public class FilledThemeparkControllerUnitTests {
                 .andExpect(jsonPath("$.rideDetails[0].minHeight", is(125)));
     }
 
+    @Test
+    public void whenAddRide_thenReturnFilledThemeparkJson() throws Exception {
+
+        Attraction attractionType3Themepark1 =  new Attraction( "Attractie 4", "test descriptie attractie 4", 100, 3, "TP1", "A004");
+
+        // POST attraction for themepark 1 from Type 3
+        mockServer.expect(ExpectedCount.once(),
+                        requestTo(new URI("http://" + attractionServiceBaseUrl + "/attractions")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(attractionType3Themepark1))
+                );
+
+        // GET Themepark 1 info
+        mockServer.expect(ExpectedCount.once(),
+                        requestTo(new URI("http://" + themeparkServiceBaseUrl + "/themeparks/TP1")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(themepark1))
+                );
+
+        mockMvc.perform(post("/api/rides")
+                    .content(mapper.writeValueAsString(attractionType3Themepark1))
+                    .contentType(MediaType.APPLICATION_JSON))
+                //expect:
+                //JSON format
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // HTTP 200
+                .andExpect(status().isOk())
+                // Results matching the values of attractionType3Themepark1
+                .andExpect(jsonPath("$.themeparkName",is("Themepark1")))
+                .andExpect(jsonPath("$.themeparkCode",is("TP1")))
+                .andExpect(jsonPath("$.themeparkAddress",is("straatlaan 1")))
+                .andExpect(jsonPath("$.themeparkCapacity",is(5000)))
+                .andExpect(jsonPath("$.rideDetails[0].attractionCode", is("A004")))
+                .andExpect(jsonPath("$.rideDetails[0].name", is("Attractie 4")))
+                .andExpect(jsonPath("$.rideDetails[0].typeId", is(3)))
+                .andExpect(jsonPath("$.rideDetails[0].minHeight", is(100)))
+                .andExpect(jsonPath("$.rideDetails[0].description", is("test descriptie attractie 4")));
+
+    }
+
+    @Test
+    public void whenUpdateRide_thenReturnFilledThemeparkJson() throws Exception {
+
+        Attraction updatedAttractionType1Themepark1 = new Attraction( "Attractie 1", "test descriptie attractie 1", 85, 1, "TP1", "A001");
+
+        // GET attraction A001
+        mockServer.expect(ExpectedCount.once(),
+                        requestTo(new URI("http://" + attractionServiceBaseUrl + "/attractions/A001")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(attractionType1Themepark1))
+                );
+
+        // PUT attraction from Type 1 for Themepark 1 with new min height 85
+        mockServer.expect(ExpectedCount.once(),
+                        requestTo(new URI("http://" + attractionServiceBaseUrl + "/attractions")))
+                .andExpect(method(HttpMethod.PUT))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(updatedAttractionType1Themepark1))
+                );
+
+        // GET Themepark 1 info
+        mockServer.expect(ExpectedCount.once(),
+                        requestTo(new URI("http://" + themeparkServiceBaseUrl + "/themeparks/TP1")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(themepark1))
+                );
+
+        mockMvc.perform(put("/api/rides")
+                        .content(mapper.writeValueAsString(updatedAttractionType1Themepark1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.themeparkName",is("Themepark1")))
+                .andExpect(jsonPath("$.themeparkCode",is("TP1")))
+                .andExpect(jsonPath("$.themeparkAddress",is("straatlaan 1")))
+                .andExpect(jsonPath("$.themeparkCapacity",is(5000)))
+                .andExpect(jsonPath("$.rideDetails[0].attractionCode", is("A001")))
+                .andExpect(jsonPath("$.rideDetails[0].name", is("Attractie 1")))
+                .andExpect(jsonPath("$.rideDetails[0].typeId", is(1)))
+                .andExpect(jsonPath("$.rideDetails[0].minHeight", is(85)))
+                .andExpect(jsonPath("$.rideDetails[0].description", is("test descriptie attractie 1")));
+
+    }
+  
+  
     @Test
     public void whenDeleteRide_thenReturnStatusOk() throws Exception {
 
