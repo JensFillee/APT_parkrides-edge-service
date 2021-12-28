@@ -13,7 +13,7 @@ Onze API is er één voor mensen die graag pretparken bezoeken. We houden pretpa
 ## Deployment Diagram
 ![Diagram microservices architectuur](https://github.com/JensFillee/APT_parkrides-edge-service/blob/main/deployment_diagram.png?raw=true)
 
-## Screenshot Swagger-UI
+## Screenshots Swagger-UI
 ![Screenshot Swagger-UI](https://github.com/JensFillee/APT_parkrides-edge-service/blob/main/Swagger-UI.jpg?raw=true)
 
-
+![Screenshot Swagger-UI-response-example](https://github.com/JensFillee/APT_parkrides-edge-service/blob/main/Swagger-UI_response_example.jpg?raw=true)
